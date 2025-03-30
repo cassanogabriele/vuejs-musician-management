@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirige les requêtes vers public (pour Laravel)
+    RewriteRule ^$ public/ [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [QSA,L]
+
+    # Si l'URL commence par 'vue/', redirige vers 'index.html' de Vue.js
+    RewriteCond %{REQUEST_URI} ^/vue/
+    RewriteRule ^vue/(.*)$ /vue/index.html [L]
+
+    # Si le fichier demandé est un fichier statique Vue.js (CSS, JS, etc.)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} ^/vue/
+    RewriteRule ^(.*)$ /vue/$1 [QSA,L]
+
+    # Rediriger toutes les autres requêtes vers index.php de Laravel (pour les API et autres routes Laravel)
+    RewriteCond %{REQUEST_URI} !^/vue/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/index.php [QSA,L]
+</IfModule>

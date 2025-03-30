@@ -5,7 +5,7 @@
         <h4 class="d-flex justify-content-between align-items-center">
           Musiciens
           <RouterLink to="/musicians/create" class="btn btn-primary">
-            <font-awesome-icon :icon="['fas', 'plus']" /> 
+            <font-awesome-icon :icon="['fas', 'plus']" />
           </RouterLink>
         </h4>
       </div>
@@ -54,7 +54,6 @@
             </tr>
           </tbody>
         </table>   
-
         <!-- Pour les petits écrans -->
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 d-block d-sm-none">
           <div class="col" v-for="(musician, index) in musicians" :key="index">
@@ -67,12 +66,11 @@
                 <p><strong>Téléphone:</strong> {{ musician.phone }}</p>
                 <p><strong>Inscription :</strong> Le <span v-html="formatDate(musician.created_at)"></span></p>
                 <div>
-                  <RouterLink :to="{ path: `/musicians/${id}/edit` }" class="btn btn-success btn-sm">
+                  <RouterLink :to="{ path: `/musicians/${musician.id}/edit` }" class="btn btn-success btn-sm">
                     <font-awesome-icon :icon="['fas', 'edit']" />
                   </RouterLink>
 
-
-                  <button type="button" class="btn btn-danger btn-sm">
+                  <button type="button" @click="deleteMusician(musician.id)" class="btn btn-danger btn-sm">
                     <font-awesome-icon :icon="['fas', 'trash']" />
                   </button>
                 </div>
@@ -86,67 +84,70 @@
 </template>
 
 <script>
-import axios from 'axios';  
+import axios from 'axios';
 
 export default {
   name: 'musicians',
   data() {
     return {
       musicians: [],
-      alertMessage: '',  
-    };   
+      alertMessage: '',
+      styleFilter: this.$route.query.style || '',  // Récupère le paramètre de style de l'URL
+    };
   },
   mounted() {
     this.getMusicians();
-    // Récupération du message à afficher à la création d'un musicien
     this.alertMessage = this.$route.query.message || ''; // Récupération du message
+  },
+  watch: {
+    // Regarder les changements du paramètre style dans l'URL
+    '$route.query.style'(newStyle) {
+      this.styleFilter = newStyle;
+      this.getMusicians(); // Recharger les musiciens filtrés
+    },
   },
   methods: {
     getMusicians() {
-      axios.get('http://musicianmanagement.gabriel-cassano.be/api/musicians')
-          .then(res => {
-            this.musicians = res.data.musicians;
-          });
+      // Ajoute le paramètre de style à la requête si disponible
+      const url = this.styleFilter 
+        ? `http://127.0.0.1:8000/api/musicians?style=${this.styleFilter}` 
+        : `http://127.0.0.1:8000/api/musicians`;
+
+      axios.get(url)
+        .then(res => {
+          console.log(res.data);
+          this.musicians = res.data.musicians;
+        })
+        .catch(error => {
+          console.error("Erreur lors du chargement des musiciens", error);
+        });
     },
     formatDate(date) {
-      // Formatage de la date en français (ex: 24 décembre 2024, 11:36)
       const newDate = new Date(date);
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       return newDate.toLocaleDateString('fr-FR', options);
     },
     deleteMusician(musicianId) {
-        if (confirm('Etes-vous sûr de supprimer le musicien ?')) {          
-            // Utilisation de backticks (`) pour permettre l'interpolation de la variable `musicianId`
-            axios.delete(`http://musicianmanagement.gabriel-cassano.be/api/musicians/${parseInt(musicianId, 10)}/delete`)
-                .then(res => {
-                    // Afficher le message de succès                   
-                    this.alertMessage = res.data.message || 'Le musicien a été supprimé avec succès';
+      if (confirm('Etes-vous sûr de supprimer le musicien ?')) {
+        axios.delete(`http://127.0.0.1:8000/api/musicians/${parseInt(musicianId, 10)}/delete`)
+          .then(res => {
+            this.alertMessage = res.data.message || 'Le musicien a été supprimé avec succès';
 
-                    setTimeout(() => {
-                        this.alertMessage = '';
-                    }, 4000);
+            setTimeout(() => {
+              this.alertMessage = '';
+            }, 4000);
 
-                    axios.get('http://musicianmanagement.gabriel-cassano.be/api/musicians')
-                      .then(res => {
-                        this.musicians = res.data.musicians;
-                      });
-                })
-                .catch(function (error) {
-                    if (error.response) {      
-                        if (error.response.status == 404) {
-                            alert(error.response.data.message);
-                            mythis.errorList = error.response.data.errors;
-                        }
-                    } else if (error.request) {
-                        console.log(error.request);
-                    } else {
-                        console.log('Error', error.message);
-                    }
-                });
-        }
+            this.getMusicians(); // Recharger les musiciens après suppression
+          })
+          .catch(error => {
+            if (error.response && error.response.status === 404) {
+              alert(error.response.data.message);
+            } else {
+              console.log('Error', error.message);
+            }
+          });
+      }
     }
   }
 }
 </script>
-
-
