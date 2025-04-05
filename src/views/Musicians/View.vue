@@ -26,7 +26,7 @@
               <th>Email</th>
               <th>Téléphone</th>
               <th>Inscription</th>
-              <th>Action</th>
+               <!--<th>Action</th> -->
             </tr>
           </thead>
           <tbody v-if="musicians.length > 0">
@@ -37,6 +37,7 @@
               <td>{{ musician.email }}</td>
               <td>{{ musician.phone }}</td>
               <td v-html="formatDate(musician.created_at)"></td>
+              <!--
               <td class="d-flex gap-1">
                 <RouterLink :to="{ path: `/musicians/${musician.id}/edit` }" class="btn btn-success btn-sm">
                   <font-awesome-icon :icon="['fas', 'edit']" />
@@ -45,7 +46,7 @@
                 <button type="button" @click="deleteMusician(musician.id)" class="btn btn-danger btn-sm">
                   <font-awesome-icon :icon="['fas', 'trash']" />
                 </button>
-              </td>
+              </td> -->
             </tr>
           </tbody>
           <tbody v-else>

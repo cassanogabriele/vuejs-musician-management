@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import AnnounceView from '../views/AnnounceView.vue';
 import MusiciansView from '../views/Musicians/View.vue';
 import LoginView from '../views/Musicians/Login.vue';
 import MusiciansCreate from '../views/Musicians/Create.vue';
@@ -23,6 +24,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterView,
+    },
+    {
+      path: '/announce',
+      name: 'announce',
+      component: AnnounceView,
     },
     {
       path: '/about',

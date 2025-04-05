@@ -72,7 +72,6 @@ const handleLogin = async () => {
     // Informer les autres composants que l'utilisateur a été mis à jour
     window.dispatchEvent(new Event('userUpdated'))
 
-    // Afficher le message de succès
     successMessage.value = 'Vous êtes connecté !'
     sessionStorage.setItem('successMessage', successMessage.value)
 

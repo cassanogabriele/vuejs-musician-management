@@ -1,10 +1,11 @@
 <template>
-  <div class="container mt-5">
-    <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ successMessage }}
-      <button type="button" class="btn-close" @click="successMessage = ''"></button>
-    </div>
+  <div v-if="successMessage" class="alert alert-success alert-dismissible fade show container mt-2" role="alert">
+    {{ successMessage }}
+    <button type="button" class="btn-close" @click="successMessage = ''"></button>
+   </div>
 
+  <div class="container mt-5">
+   
     <h2 class="title">🎵 Musiciens récemment ajoutés</h2>
     
     <div class="card-container">
