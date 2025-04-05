@@ -1,6 +1,5 @@
 <template>
   <div class="container mt-5">
-    <!-- Message de succès dynamique -->
     <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
       {{ successMessage }}
       <button type="button" class="btn-close" @click="successMessage = ''"></button>
@@ -24,49 +23,26 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 
 const musicians = ref([])
 const successMessage = ref('')
-const isLoggedIn = ref(false)
-const user = ref({})
-const router = useRouter()
 
-// Vérifier si l'utilisateur est connecté
-const checkUser = () => {
-  const storedUser = localStorage.getItem('user')
-
-  if (storedUser) {
-    user.value = JSON.parse(storedUser)
-    isLoggedIn.value = true
-    successMessage.value = `Vous êtes connecté !`
-  } else {
-    isLoggedIn.value = false
-    successMessage.value = 'Vous êtes déconnecté.'
-  }
+const showMessage = (message) => {
+  successMessage.value = message
+  setTimeout(() => successMessage.value = '', 3000)
 }
 
-// Vérifier l'état utilisateur au montage
 onMounted(() => {
-  checkUser()
-  window.addEventListener('userUpdated', checkUser)
+  const storedMessage = sessionStorage.getItem('successMessage')
+  
+  if (storedMessage) {
+    showMessage(storedMessage)
+    sessionStorage.removeItem('successMessage') 
+  }
+  
   fetchMusicians()
 })
 
-// Fonction de déconnexion
-const handleLogout = () => {
-  localStorage.removeItem('user')
-  localStorage.removeItem('token')
-
-  user.value = null
-  isLoggedIn.value = false
-  successMessage.value = 'Vous êtes déconnecté.'
-
-  window.dispatchEvent(new Event('userUpdated'))
-  router.push('/')
-}
-
-// Récupérer les musiciens
 const fetchMusicians = async () => {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/musicians/recent')
