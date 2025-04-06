@@ -67,6 +67,7 @@ export default {
             // Liste des erreurs venant de Laravel
             errorList: '', 
             alertMessage: '', 
+            apiUrl: 'http://127.0.0.1:8000/api',
             model: {
                 musician: {
                     name: '',
@@ -84,10 +85,9 @@ export default {
     methods: {
         // Récupérer les infos du musicien qu'on va mettre à jour
        getMusicianData(musicianId) {
-            musicianId = parseInt(musicianId, 10);
-            alert(musicianId);
-
-            axios.get(`http://127.0.0.1:8000/api/musicians/${musicianId}/edit`)
+            musicianId = parseInt(musicianId, 10);          
+             
+            axios.get(`${this.apiUrl}/musicians/${this.musicianId}/edit`)
                 .then(res => {
                     this.model.musician.name = res.data.musician.name;
                     this.model.musician.style = res.data.musician.style;
@@ -102,7 +102,7 @@ export default {
             var mythis = this;
 
             // Utiliser les backticks pour l'interpolation de la chaîne
-            axios.put(`http://127.0.0.1:8000/api/musicians/${this.musicianId}/edit`, this.model.musician)
+           axios.put(`${this.apiUrl}/musicians/${this.musicianId}`, this.model.musician)
                 .then(res => {
                     // Si la mise à jour est réussie
                     this.alertMessage = res.data.message || 'Musicien mis à jour avec succès'; 
