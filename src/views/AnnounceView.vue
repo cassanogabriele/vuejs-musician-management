@@ -82,11 +82,14 @@ const user = ref(null)
 const successMessage = ref('')
 const errorMessage = ref('')
 const errors = ref({})
+const apiUrl = 'http://127.0.0.1:8000/api';
+
 const announcement = ref({
   name: '',
   style: '',
   email: '',
-  phone: ''
+  phone: '',
+  userid: '',
 })
 
 // Vérifier l'état de l'utilisateur connecté
@@ -110,12 +113,18 @@ const submitAnnouncement = async () => {
   }
 
   try {
+    // Récupérer l'id utilisateur
+    const storedUser = localStorage.getItem('user')
+    const userObject = JSON.parse(storedUser); 
+    const user_id =  userObject.id;
+    
     // Envoi des données à l'API
-    const response = await axios.post('http://127.0.0.1:8000/api/announcements', {
+    const response = await axios.post(`${apiUrl}/announcements`, {
       name: announcement.value.name,
       style: announcement.value.style,
       email: announcement.value.email,
-      phone: announcement.value.phone
+      phone: announcement.value.phone,
+      userId: user_id
     }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`

@@ -40,11 +40,12 @@ const password = ref('')
 const message = ref('')
 const messageType = ref('alert-success') // Par défaut une alerte verte (succès)
 const errors = ref({})
+const apiUrl = 'http://127.0.0.1:8000/api'; 
 
 const handleRegister = async () => {
   try {
     // Envoi des données au serveur Laravel
-    const response = await axios.post('http://127.0.0.1:8000/api/register', {
+    const response = await axios.post(`${apiUrl}/register`, {
       name: name.value,
       email: email.value,
       password: password.value

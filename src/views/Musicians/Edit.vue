@@ -85,8 +85,9 @@ export default {
         // Récupérer les infos du musicien qu'on va mettre à jour
        getMusicianData(musicianId) {
             musicianId = parseInt(musicianId, 10);
+            alert(musicianId);
 
-            axios.get(`http://musicianmanagement.gabriel-cassano.be/api/musicians/${musicianId}/edit`)
+            axios.get(`http://127.0.0.1:8000/api/musicians/${musicianId}/edit`)
                 .then(res => {
                     this.model.musician.name = res.data.musician.name;
                     this.model.musician.style = res.data.musician.style;
@@ -101,14 +102,14 @@ export default {
             var mythis = this;
 
             // Utiliser les backticks pour l'interpolation de la chaîne
-            axios.put(`http://musicianmanagement.gabriel-cassano.be/api/musicians/${this.musicianId}/edit`, this.model.musician)
+            axios.put(`http://127.0.0.1:8000/api/musicians/${this.musicianId}/edit`, this.model.musician)
                 .then(res => {
                     // Si la mise à jour est réussie
                     this.alertMessage = res.data.message || 'Musicien mis à jour avec succès'; 
                 
                     // Redirection vers la page des musiciens après un délai
                     setTimeout(() => {
-                        this.$router.push('/musicians');
+                        this.$router.push('/my-announces');
                     }, 3000);
                 })
                 .catch(function (error) {

@@ -27,6 +27,7 @@ import axios from 'axios'
 
 const musicians = ref([])
 const successMessage = ref('')
+const apiUrl = 'http://127.0.0.1:8000/api';
 
 const showMessage = (message) => {
   successMessage.value = message
@@ -46,7 +47,7 @@ onMounted(() => {
 
 const fetchMusicians = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/musicians/recent')
+    const response = await axios.get(`${apiUrl}/musicians/recent`);
     musicians.value = response.data.musicians
   } catch (error) {
     console.error('Erreur lors de la récupération des musiciens:', error)

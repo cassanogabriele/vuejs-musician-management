@@ -39,6 +39,7 @@ const successMessage = ref('')
 const errors = ref({})
 const isLoggedIn = ref(false)
 const user = ref({})
+const apiUrl = 'http://127.0.0.1:8000/api';
 
 const showMessage = (message) => {
   successMessage.value = message
@@ -56,7 +57,7 @@ onMounted(() => {
 // Fonction de gestion de la connexion
 const handleLogin = async () => {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/api/login', {
+    const response = await axios.post(`${apiUrl}/login`, {
       email: email.value,
       password: password.value
     })

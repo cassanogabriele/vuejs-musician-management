@@ -18,6 +18,10 @@
                <RouterLink class="nav-link active" to="/announce">Annoncer</RouterLink>
               </li>
 
+              <li v-if="isLoggedIn" class="nav-item">
+               <RouterLink class="nav-link active" to="/my-announces"><i class="fas fa-bullhorn"></i> Mes annonces</RouterLink>
+              </li>
+
               <li class="nav-item dropdown">
                 <select 
                   v-model="selectedStyle" 
@@ -73,13 +77,14 @@ const router = useRouter()
 const user = ref(null)
 const isLoggedIn = ref(false)
 const successMessage = ref('')
-const styles = ref([]) // 🔥 Assure-toi que la variable est bien définie
-const selectedStyle = ref('') // Style sélectionné par l'utilisateur
-
+const styles = ref([]) 
+const selectedStyle = ref('') 
+const apiUrl = 'http://127.0.0.1:8000'
 
 // Vérifier l'état de connexion lors du montage
 const checkUser = () => {
   const storedUser = localStorage.getItem('user')
+
   if (storedUser) {
     user.value = JSON.parse(storedUser)
     isLoggedIn.value = true
@@ -108,7 +113,8 @@ onMounted(() => {
 // Récupérer les styles depuis l'API Laravel
 const fetchStyles = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/styles')
+    const response = await axios.get(`${apiUrl}/api/styles`) 
+    
     if (response.status === 200) {
       styles.value = response.data.styles  // ✅ Correction ici
     }

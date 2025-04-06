@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import AnnounceView from '../views/AnnounceView.vue';
+import MyAnnouncesView from '../views/MyAnnouncesView.vue';
 import MusiciansView from '../views/Musicians/View.vue';
 import LoginView from '../views/Musicians/Login.vue';
-import MusiciansCreate from '../views/Musicians/Create.vue';
 import MusiciansEdit from '../views/Musicians/Edit.vue';
 import RegisterView from '../views/Musicians/Register.vue';
 
@@ -31,6 +31,11 @@ const router = createRouter({
       component: AnnounceView,
     },
     {
+      path: '/my-announces',
+      name: 'my-announces',
+      component: MyAnnouncesView,
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import('../views/AboutView.vue'),
@@ -39,12 +44,7 @@ const router = createRouter({
       path: '/musicians',
       name: 'musicians',
       component: MusiciansView,
-    },
-    {
-      path: '/musicians/create',
-      name: 'musicianCreate',
-      component: MusiciansCreate,
-    },
+    },   
     {
       path: '/musicians/:id/edit',
       name: 'musicianEdit',

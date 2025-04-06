@@ -3,14 +3,13 @@
     <div class="card">
       <div class="card-header">
         <h4 class="d-flex justify-content-between align-items-center">
-          Musiciens
-          <RouterLink to="/musicians/announce" class="btn btn-primary">
+          Vos annonces
+          <RouterLink to="/musicians/create" class="btn btn-primary">
             <font-awesome-icon :icon="['fas', 'plus']" />
           </RouterLink>
         </h4>
       </div>
 
-      <!-- Message de succès -->
       <div class="alert alert-success alert-dismissible fade show" v-if="alertMessage" role="alert">
         <strong>{{ alertMessage }}</strong>
         <button type="button" class="btn-close" @click="alertMessage = ''"></button>
@@ -26,6 +25,7 @@
               <th>Email</th>
               <th>Téléphone</th>
               <th>Inscription</th>
+              <th>Action</th> 
             </tr>
           </thead>
           <tbody v-if="musicians.length > 0">
@@ -36,7 +36,7 @@
               <td>{{ musician.email }}</td>
               <td>{{ musician.phone }}</td>
               <td v-html="formatDate(musician.created_at)"></td>
-              <!--
+            
               <td class="d-flex gap-1">
                 <RouterLink :to="{ path: `/musicians/${musician.id}/edit` }" class="btn btn-success btn-sm">
                   <font-awesome-icon :icon="['fas', 'edit']" />
@@ -45,7 +45,7 @@
                 <button type="button" @click="deleteMusician(musician.id)" class="btn btn-danger btn-sm">
                   <font-awesome-icon :icon="['fas', 'trash']" />
                 </button>
-              </td> -->
+              </td> 
             </tr>
           </tbody>
           <tbody v-else>
@@ -64,7 +64,16 @@
                 <p><strong>Styles:</strong> {{ musician.style }}</p>
                 <p><strong>Email:</strong> {{ musician.email }}</p>
                 <p><strong>Téléphone:</strong> {{ musician.phone }}</p>
-                <p><strong>Inscription :</strong> Le <span v-html="formatDate(musician.created_at)"></span></p>                
+                <p><strong>Inscription :</strong> Le <span v-html="formatDate(musician.created_at)"></span></p>
+                <div>
+                  <RouterLink :to="{ path: `/musicians/${musician.id}/edit` }" class="btn btn-success btn-sm">
+                    <font-awesome-icon :icon="['fas', 'edit']" />
+                  </RouterLink>
+
+                  <button type="button" @click="deleteMusician(musician.id)" class="btn btn-danger btn-sm">
+                    <font-awesome-icon :icon="['fas', 'trash']" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -75,51 +84,71 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
-  name: 'musicians',
   data() {
     return {
       musicians: [],
+      loading: true,
       alertMessage: '',
-      styleFilter: this.$route.query.style || '', 
-      apiUrl: 'http://127.0.0.1:8000/api',
+      apiUrl: 'http://127.0.0.1:8000',
     };
   },
   mounted() {
-    this.getMusicians();
-    // Récupération du message
-    this.alertMessage = this.$route.query.message || ''; 
-  },
-  watch: {
-    // Regarder les changements du paramètre style dans l'URL
-    '$route.query.style'(newStyle) {
-      this.styleFilter = newStyle;
-      this.getMusicians(); // Recharger les musiciens filtrés
-    },
+    this.getAnnouncesOfUser();
   },
   methods: {
-    getMusicians() {
-      // Ajoute le paramètre de style à la requête si disponible
-      const url = this.styleFilter 
-        ? `${this.apiUrl}/musicians?style=${this.styleFilter}`  
-        : `${this.apiUrl}/musicians`;  
+    async getAnnouncesOfUser() {
+      try {
+        // Récupérer des informations de l'utilisateur dans le localStorage
+        const storedUser = localStorage.getItem('user');
+        const userObject = JSON.parse(storedUser); 
+        const userId = userObject.id;        
 
-      axios.get(url)
-        .then(res => {
-          console.log(res.data);
-          this.musicians = res.data.musicians;
-        })
-        .catch(error => {
-          console.error("Erreur lors du chargement des musiciens", error);
+        const response = await axios.get(`${this.apiUrl}/api/announces`, { 
+          params: {
+            user_id: userId, 
+          }
         });
+
+        this.musicians = response.data.musicians;
+      } catch (error) {
+        console.error('Erreur lors de la récupération des musiciens:', error);
+      } finally {
+        this.loading = false;
+      }
     },
-    formatDate(date) {
+     formatDate(date) {
       const newDate = new Date(date);
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       return newDate.toLocaleDateString('fr-FR', options);
-    },    
+    },
+    deleteMusician(musicianId) {
+      if (confirm('Etes-vous sûr de supprimer le musicien ?')) {
+        // Utilisation de apiUrl pour créer le chemin complet
+        const url = `${this.apiUrl}/api/musicians/${parseInt(musicianId, 10)}/delete`;
+
+        axios.delete(url)
+          .then(res => {
+            this.alertMessage = res.data.message || 'Le musicien a été supprimé avec succès';
+
+            setTimeout(() => {
+              this.alertMessage = '';
+            }, 4000);
+
+            this.getAnnouncesOfUser(); 
+          })
+          .catch(error => {
+            if (error.response && error.response.status === 404) {
+              alert(error.response.data.message);
+            } else {
+              console.log('Error', error.message);
+            }
+          });
+      }
+    }
   }
-}
+};
 </script>
+
