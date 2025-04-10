@@ -26,6 +26,7 @@
               <th>Email</th>
               <th>Téléphone</th>
               <th>Inscription</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody v-if="musicians.length > 0">
@@ -36,16 +37,11 @@
               <td>{{ musician.email }}</td>
               <td>{{ musician.phone }}</td>
               <td v-html="formatDate(musician.created_at)"></td>
-              <!--
-              <td class="d-flex gap-1">
-                <RouterLink :to="{ path: `/musicians/${musician.id}/edit` }" class="btn btn-success btn-sm">
-                  <font-awesome-icon :icon="['fas', 'edit']" />
-                </RouterLink>
-
-                <button type="button" @click="deleteMusician(musician.id)" class="btn btn-danger btn-sm">
-                  <font-awesome-icon :icon="['fas', 'trash']" />
-                </button>
-              </td> -->
+              <td>
+               <button @click="toggleWishlist(musician.id)" class="btn btn-sm">
+                <font-awesome-icon :icon="['fas', 'heart']" style="color: #DAA520;" />
+               </button>
+              </td>
             </tr>
           </tbody>
           <tbody v-else>
@@ -78,48 +74,65 @@
 import axios from 'axios';
 
 export default {
-  name: 'musicians',
   data() {
     return {
       musicians: [],
       alertMessage: '',
-      styleFilter: this.$route.query.style || '', 
+      styleFilter: this.$route.query.style || '',
+      newWishlistName: '',
+      showWishlistForm: false,
       apiUrl: 'http://127.0.0.1:8000/api',
     };
   },
   mounted() {
     this.getMusicians();
-    // Récupération du message
-    this.alertMessage = this.$route.query.message || ''; 
-  },
-  watch: {
-    // Regarder les changements du paramètre style dans l'URL
-    '$route.query.style'(newStyle) {
-      this.styleFilter = newStyle;
-      this.getMusicians(); // Recharger les musiciens filtrés
-    },
   },
   methods: {
     getMusicians() {
-      // Ajoute le paramètre de style à la requête si disponible
-      const url = this.styleFilter 
-        ? `${this.apiUrl}/musicians?style=${this.styleFilter}`  
-        : `${this.apiUrl}/musicians`;  
+      const url = this.styleFilter
+        ? `${this.apiUrl}/musicians?style=${this.styleFilter}`
+        : `${this.apiUrl}/musicians`;
 
-      axios.get(url)
-        .then(res => {
-          console.log(res.data);
-          this.musicians = res.data.musicians;
-        })
-        .catch(error => {
-          console.error("Erreur lors du chargement des musiciens", error);
-        });
+      axios.get(url).then(res => {
+        this.musicians = res.data.musicians;
+      });
+    },
+
+    toggleWishlist(musicianId) {
+      // Vérifier si l'utilisateur a déjà des wishlists
+      axios.get(`${this.apiUrl}/wishlists`).then(res => {
+        const wishlists = res.data;
+
+        if (wishlists.length === 0) {
+          // Si l'utilisateur n'a pas de wishlist, on le redirige vers la page de création
+          this.$router.push({ name: 'create-wishlist', params: { musicianId: musicianId } });
+        } else {
+          // Si l'utilisateur a des wishlists, on lui permet de les choisir ou de créer une nouvelle
+          this.selectedWishlistId = wishlists[0].id; // Par exemple, on sélectionne la première wishlist
+          this.addMusicianToWishlist(musicianId, this.selectedWishlistId);
+        }
+      }).catch(error => {
+        console.error("Erreur lors de la récupération des wishlists", error);
+      });
+    },  
+    toggleWishlist(musicianId) {
+      alert(musicianId);  // Affiche l'ID pour vérifier qu'il est bien transmis
+      
+      // Vérifier si l'utilisateur a déjà des wishlists
+      axios.get(`${this.apiUrl}/wishlists`).then(res => {
+        const wishlists = res.data;
+
+        // Rediriger vers la page de création de wishlist avec l'ID du musicien
+        this.$router.push({ name: 'create-wishlist', params: { id: musicianId } });
+      }).catch(error => {
+        console.error("Erreur lors de la récupération des wishlists", error);
+      });
     },
     formatDate(date) {
       const newDate = new Date(date);
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       return newDate.toLocaleDateString('fr-FR', options);
-    },    
-  }
-}
+    },
+  },
+};
 </script>

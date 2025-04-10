@@ -6,6 +6,8 @@ import MusiciansView from '../views/Musicians/View.vue';
 import LoginView from '../views/Musicians/Login.vue';
 import MusiciansEdit from '../views/Musicians/Edit.vue';
 import RegisterView from '../views/Musicians/Register.vue';
+import WishlistView from '../views/Musicians/WishlistView.vue'
+import CreateWishlist from '../views/Musicians/CreateWishlist.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -50,6 +52,17 @@ const router = createRouter({
       name: 'musicianEdit',
       component: MusiciansEdit,
     },
+    {
+      path: '/wishlist/:id',
+      name: 'wishlist',
+      component: WishlistView,
+      props: true,  
+    },
+    {
+      path: '/create/:id',
+      name: 'create-wishlist',
+      component: CreateWishlist,
+    },  
     // Catch-all route pour rediriger vers home si aucune route ne correspond
     {
       path: '/:pathMatch(.*)*',

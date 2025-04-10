@@ -83,6 +83,7 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const errors = ref({})
 const apiUrl = 'http://127.0.0.1:8000/api';
+// const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
 
 const announcement = ref({
   name: '',

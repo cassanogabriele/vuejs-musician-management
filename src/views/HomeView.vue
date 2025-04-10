@@ -2,10 +2,9 @@
   <div v-if="successMessage" class="alert alert-success alert-dismissible fade show container mt-2" role="alert">
     {{ successMessage }}
     <button type="button" class="btn-close" @click="successMessage = ''"></button>
-   </div>
+  </div>
 
-  <div class="container mt-5">
-   
+  <div class="container mt-5">   
     <h2 class="title">🎵 Musiciens récemment ajoutés</h2>
     
     <div class="card-container">
@@ -15,6 +14,12 @@
           <p class="style"><strong>Style :</strong> {{ musician.style }}</p>
           <p><strong>Email :</strong> {{ musician.email }}</p>
           <p><strong>Téléphone :</strong> {{ musician.phone }}</p>
+
+          <div class="button-container" v-if="isLoggedIn">
+            <button @click="toggleWishlist(musician.id)" class="btn btn-sm">
+              <font-awesome-icon :icon="['fas', 'heart']" style="color: #DAA520;" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -23,8 +28,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
+const router = useRouter(); 
+const isLoggedIn = ref(false)
+const user = ref(null)
 const musicians = ref([])
 const successMessage = ref('')
 const apiUrl = 'http://127.0.0.1:8000/api';
@@ -41,9 +50,22 @@ onMounted(() => {
     showMessage(storedMessage)
     sessionStorage.removeItem('successMessage') 
   }
+
+  checkUser()
   
   fetchMusicians()
 })
+
+const checkUser = () => {
+  const storedUser = localStorage.getItem('user')
+
+  if (storedUser) {
+    user.value = JSON.parse(storedUser)
+    isLoggedIn.value = true
+  } else {
+    isLoggedIn.value = false
+  }
+}
 
 const fetchMusicians = async () => {
   try {
@@ -53,6 +75,36 @@ const fetchMusicians = async () => {
     console.error('Erreur lors de la récupération des musiciens:', error)
   }
 }
+
+const toggleWishlist = async (musicianId) => {
+  try {
+    const res = await axios.get(`${apiUrl}/wishlists`);
+    const wishlists = res.data;
+
+    if (wishlists.length === 0) {
+      // ✅ Correction : passer `id` au lieu de `musicianId`
+      router.push({ name: 'create-wishlist', params: { id: musicianId } });
+    } else {
+      // Si l'utilisateur a des wishlists, ajouter à la première wishlist par défaut
+      const selectedWishlistId = wishlists[0].id;
+      await addMusicianToWishlist(musicianId, selectedWishlistId);
+    }
+  } catch (error) {
+    console.error("Erreur lors de la récupération des wishlists", error);
+  }
+};
+
+const addMusicianToWishlist = async (musicianId, wishlistId) => {
+  try {
+    await axios.post(`${apiUrl}/wishlist/add-musician`, {
+      musician_id: musicianId,
+      wishlist_id: wishlistId
+    });
+    showMessage('Musicien ajouté à la wishlist avec succès !');
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du musicien à la wishlist", error);
+  }
+};
 </script>
 
 <style scoped>
@@ -112,5 +164,10 @@ p {
 .style {
   font-weight: bold;
   color: #E44D26;
+}
+
+/* Aligner le bouton à droite */
+.button-container {
+  text-align: right;
 }
 </style>

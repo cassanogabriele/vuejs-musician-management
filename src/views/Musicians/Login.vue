@@ -40,6 +40,7 @@ const errors = ref({})
 const isLoggedIn = ref(false)
 const user = ref({})
 const apiUrl = 'http://127.0.0.1:8000/api';
+// const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
 
 const showMessage = (message) => {
   successMessage.value = message

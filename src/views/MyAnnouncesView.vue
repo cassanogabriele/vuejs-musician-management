@@ -92,7 +92,8 @@ export default {
       musicians: [],
       loading: true,
       alertMessage: '',
-      apiUrl: 'http://127.0.0.1:8000',
+      apiUrl: 'http://127.0.0.1:8000/api',
+      // apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api',
     };
   },
   mounted() {
@@ -106,7 +107,7 @@ export default {
         const userObject = JSON.parse(storedUser); 
         const userId = userObject.id;        
 
-        const response = await axios.get(`${this.apiUrl}/api/announces`, { 
+        const response = await axios.get(`${this.apiUrl}/announces`, { 
           params: {
             user_id: userId, 
           }

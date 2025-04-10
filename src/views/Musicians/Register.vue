@@ -41,6 +41,7 @@ const message = ref('')
 const messageType = ref('alert-success') // Par défaut une alerte verte (succès)
 const errors = ref({})
 const apiUrl = 'http://127.0.0.1:8000/api'; 
+// const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
 
 const handleRegister = async () => {
   try {

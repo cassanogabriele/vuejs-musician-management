@@ -79,7 +79,8 @@ const isLoggedIn = ref(false)
 const successMessage = ref('')
 const styles = ref([]) 
 const selectedStyle = ref('') 
-const apiUrl = 'http://127.0.0.1:8000'
+const apiUrl = 'http://127.0.0.1:8000/api'
+// const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
 
 // Vérifier l'état de connexion lors du montage
 const checkUser = () => {
@@ -113,10 +114,10 @@ onMounted(() => {
 // Récupérer les styles depuis l'API Laravel
 const fetchStyles = async () => {
   try {
-    const response = await axios.get(`${apiUrl}/api/styles`) 
-    
+    const response = await axios.get(`${apiUrl}/styles`) 
+
     if (response.status === 200) {
-      styles.value = response.data.styles  // ✅ Correction ici
+      styles.value = response.data.styles  
     }
   } catch (error) {
     console.error('Erreur lors de la récupération des styles:', error)
@@ -136,8 +137,8 @@ const clearSuccessMessage = () => {
 
 // Fonction de déconnexion
 const handleLogout = async () => {
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/api/logout', {}, {
+  try {   
+    const response = await axios.post(`${apiUrl}/logout`, {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }

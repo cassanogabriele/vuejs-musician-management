@@ -68,6 +68,7 @@ export default {
             errorList: '', 
             alertMessage: '', 
             apiUrl: 'http://127.0.0.1:8000/api',
+            // apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api',
             model: {
                 musician: {
                     name: '',
