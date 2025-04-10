@@ -7,8 +7,8 @@
       <button type="button" class="btn-close" @click="alertMessage = ''"></button>
     </div>
 
-    <!-- Si l'utilisateur n'a pas de wishlist ou souhaite en créer une nouvelle -->
-    <div v-if="wishlists.length === 0 || !selectedWishlistId" class="mb-3">
+    <!-- Si l'utilisateur n'a pas de wishlist -->
+    <div v-if="wishlists.length === 0" class="mb-3">
       <label for="newWishlist" class="form-label">Nom de la nouvelle liste de souhaits :</label>
       <input
         type="text"
@@ -20,8 +20,8 @@
       <button type="submit" class="btn btn-primary mt-2" @click="createNewWishlist">Créer</button>
     </div>
 
-    <!-- Si des wishlists existent déjà -->
-    <div v-if="wishlists.length > 0" class="mb-3">
+    <!-- Si l'utilisateur a des wishlists -->
+    <div v-else class="mb-3">
       <form @submit.prevent="handleSubmit">
         <label for="wishlist" class="form-label">Choisissez une wishlist :</label>
         <select v-model="selectedWishlistId" id="wishlist" class="form-select" required>
@@ -33,6 +33,19 @@
 
         <button type="submit" class="btn btn-primary mt-2">Ajouter à la wishlist</button>
       </form>
+
+      <!-- Si aucune wishlist n'est sélectionnée, possibilité de créer une nouvelle wishlist -->
+      <div v-if="!selectedWishlistId" class="mt-3">
+        <label for="newWishlist" class="form-label">Nom de la nouvelle liste de souhaits :</label>
+        <input
+          type="text"
+          id="newWishlist"
+          class="form-control"
+          v-model="newWishlistName"
+          required
+        />
+        <button type="submit" class="btn btn-primary mt-2" @click="createNewWishlist">Créer</button>
+      </div>
     </div>
   </div>
 </template>
@@ -47,12 +60,12 @@ export default {
       selectedWishlistId: null,
       newWishlistName: '',
       alertMessage: '',
-      musicianId: null, // ✅ Initialisé ici au lieu de l'utiliser mal dans mounted()
+      musicianId: null,
       apiUrl: 'http://127.0.0.1:8000/api',
     };
   },
   mounted() {
-    // ✅ Récupérer l'ID du musicien depuis les paramètres de la route
+    // Récupérer l'ID du musicien depuis les paramètres de la route
     this.musicianId = this.$route.params.id; // Correction ici
     
     // Récupérer les wishlists existantes de l'utilisateur
@@ -60,15 +73,31 @@ export default {
   },
   methods: {
     fetchWishlists() {
-      axios.get(`${this.apiUrl}/wishlists`)
+      const storedUser = localStorage.getItem('user');
+
+      if (!storedUser) {
+        console.error("Utilisateur non connecté");
+        return;
+      }
+
+      const userObject = JSON.parse(storedUser);
+      const userId = userObject.id;
+
+      // Envoie l'ID de l'utilisateur directement dans l'URL
+      axios.get(`${this.apiUrl}/wishlists/${userId}`)
         .then((res) => {
           this.wishlists = res.data;
+          console.log("Wishlists de l'utilisateur :", this.wishlists);
         })
         .catch((error) => {
           console.error("Erreur lors de la récupération des wishlists", error);
+          if (error.response && error.response.data && error.response.data.message) {
+            this.alertMessage = `Erreur: ${error.response.data.message}`;
+          } else {
+            this.alertMessage = "Erreur lors de la récupération des wishlists. Veuillez réessayer.";
+          }
         });
     },
-
     handleSubmit() {
       if (this.selectedWishlistId) {
         this.addMusicianToWishlist(this.musicianId, this.selectedWishlistId);
@@ -76,7 +105,6 @@ export default {
         this.createNewWishlist();
       }
     },
-
     addMusicianToWishlist(musicianId, wishlistId) {
       axios.post(`${this.apiUrl}/wishlist/add-musician`, {
         musician_id: musicianId, // ✅ Correction ici
@@ -95,7 +123,6 @@ export default {
         return;
       }
 
-      // ✅ Récupérer correctement l'utilisateur depuis le localStorage
       const storedUser = localStorage.getItem('user');
       if (!storedUser) {
         this.alertMessage = "Erreur : utilisateur non connecté.";
@@ -120,3 +147,4 @@ export default {
   },
 };
 </script>
+

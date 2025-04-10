@@ -82,7 +82,6 @@ const toggleWishlist = async (musicianId) => {
     const wishlists = res.data;
 
     if (wishlists.length === 0) {
-      // ✅ Correction : passer `id` au lieu de `musicianId`
       router.push({ name: 'create-wishlist', params: { id: musicianId } });
     } else {
       // Si l'utilisateur a des wishlists, ajouter à la première wishlist par défaut
