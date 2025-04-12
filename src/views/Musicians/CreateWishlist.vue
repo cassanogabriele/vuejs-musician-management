@@ -107,7 +107,7 @@ export default {
     },
     addMusicianToWishlist(musicianId, wishlistId) {
       axios.post(`${this.apiUrl}/wishlist/add-musician`, {
-        musician_id: musicianId, // ✅ Correction ici
+        musician_id: musicianId, 
         wishlist_id: wishlistId,
       }).then(() => {
         this.alertMessage = 'Musicien ajouté à la wishlist!';
@@ -117,7 +117,6 @@ export default {
     },
 
     createNewWishlist() {
-      alert(this.musicianId);
       if (!this.newWishlistName) {
         this.alertMessage = 'Veuillez entrer un nom pour la wishlist.';
         return;

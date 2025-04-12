@@ -115,9 +115,7 @@ export default {
         console.error("Erreur lors de la récupération des wishlists", error);
       });
     },  
-    toggleWishlist(musicianId) {
-      alert(musicianId);  // Affiche l'ID pour vérifier qu'il est bien transmis
-      
+    toggleWishlist(musicianId) {      
       // Vérifier si l'utilisateur a déjà des wishlists
       axios.get(`${this.apiUrl}/wishlists`).then(res => {
         const wishlists = res.data;

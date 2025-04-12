@@ -51,18 +51,17 @@ const router = createRouter({
       path: '/musicians/:id/edit',
       name: 'musicianEdit',
       component: MusiciansEdit,
-    },
-    {
-      path: '/wishlist/:id',
-      name: 'wishlist',
-      component: WishlistView,
-      props: true,  
-    },
+    },   
     {
       path: '/create/:id',
       name: 'create-wishlist',
       component: CreateWishlist,
     },  
+    {
+      path: '/wishlist',
+      name: 'wishlist',
+      component: WishlistView,
+    },    
     // Catch-all route pour rediriger vers home si aucune route ne correspond
     {
       path: '/:pathMatch(.*)*',

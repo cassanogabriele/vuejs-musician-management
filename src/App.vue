@@ -49,6 +49,12 @@
               <li v-if="isLoggedIn" class="nav-item">
                 <button class="btn btn-outline-danger" @click="handleLogout">Déconnexion</button>
               </li>
+
+              <li v-if="isLoggedIn" class="nav-item">
+                <router-link to="/wishlist" class="btn btn-sm">
+                  <font-awesome-icon :icon="['fas', 'heart']" style="color: #DAA520;" />
+                </router-link>
+              </li>
             </ul>
           </div>
         </div>
