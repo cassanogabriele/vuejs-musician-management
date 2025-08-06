@@ -1,0 +1,1 @@
+import{_ as s,c as n,a as t,o as c}from"./index-DbaOmASR.js";const o={},a={class:"about"};function r(i,e){return c(),n("div",a,e[0]||(e[0]=[t("h1",{class:"text-center"},"A propos",-1),t("div",{class:"d-flex justify-content-center align-items-center mt-3"}," CRUD en Vue JS, avec un API en Laravel 11. ",-1)]))}const _=s(o,[["render",r]]);export{_ as default};

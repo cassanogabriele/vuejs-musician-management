@@ -61,7 +61,8 @@ export default {
       newWishlistName: '',
       alertMessage: '',
       musicianId: null,
-      apiUrl: 'http://127.0.0.1:8000/api',
+      // apiUrl: 'http://127.0.0.1:8000/api',
+      apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api',
     };
   },
   mounted() {
@@ -110,7 +111,7 @@ export default {
         musician_id: musicianId, 
         wishlist_id: wishlistId,
       }).then(() => {
-        this.alertMessage = 'Musicien ajouté à la wishlist!';
+        this.alertMessage = 'Musicien ajouté à la liste de souhaits';
       }).catch((error) => {
         console.error("Erreur lors de l'ajout du musicien", error);
       });
@@ -140,7 +141,7 @@ export default {
         this.fetchWishlists();  
       }).catch((error) => {
         console.error("Erreur lors de la création de la wishlist", error);
-        this.alertMessage = "Erreur lors de la création de la wishlist. Veuillez réessayer.";
+        this.alertMessage = "Erreur lors de la création de la liste de souhaits. Veuillez réessayer.";
       });
     },
   },

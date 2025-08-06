@@ -39,7 +39,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from 'axios'
 
@@ -48,7 +47,8 @@ export default {
     return {
       wishlists: [],
       alertMessage: '',
-      apiUrl: 'http://localhost:8000/api', // ajuste selon ton backend
+      // apiUrl: 'http://localhost:8000/api', 
+      apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api', 
     };
   },
   mounted() {

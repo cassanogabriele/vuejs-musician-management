@@ -81,7 +81,8 @@ export default {
       styleFilter: this.$route.query.style || '',
       newWishlistName: '',
       showWishlistForm: false,
-      apiUrl: 'http://127.0.0.1:8000/api',
+      // apiUrl: 'http://127.0.0.1:8000/api',
+      apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api',
     };
   },
   mounted() {

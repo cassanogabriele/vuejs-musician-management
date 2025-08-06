@@ -71,82 +71,142 @@
 </template>
 
 <script setup>
+// Importation des fonctionnalités nécessaires de Vue et des bibliothèques
+
+// Pour créer des références réactives et déclencher une fonction au montage du composant
 import { ref, onMounted } from 'vue'
+// Pour effectuer des requêtes HTTP
 import axios from 'axios'
-import { useRouter } from 'vue-router'
+// Pour naviguer entre les routes de l'application
+import { useRouter } from 'vue-router' 
 
-// Initialisation du router et des variables
-const router = useRouter()
-const isLoggedIn = ref(false)
-const user = ref(null)
-const successMessage = ref('')
-const errorMessage = ref('')
-const errors = ref({})
-const apiUrl = 'http://127.0.0.1:8000/api';
-// const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
+// Initialisation du router et des variables réactives
+// Utilisation du router pour la navigation
+const router = useRouter() 
 
+// Indique si l'utilisateur est connecté ou non
+const isLoggedIn = ref(false) 
+
+// Stocke les données de l'utilisateur connecté
+const user = ref(null) 
+
+// Message de succès à afficher après une action réussie
+const successMessage = ref('') 
+
+// Message d'erreur global
+const errorMessage = ref('') 
+
+// Objet pour contenir les erreurs de validation spécifiques aux champs
+const errors = ref({}) 
+
+// URL de base de l'API (à adapter en production si besoin)
+// const apiUrl = 'http://127.0.0.1:8000/api';
+const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
+
+// Déclaration d'un objet réactif pour stocker les données de l'annonce
 const announcement = ref({
-  name: '',
-  style: '',
-  email: '',
-  phone: '',
-  userid: '',
+  // Nom du musicien ou de l'annonce
+  name: '',    
+
+  // Style musical
+  style: '',   
+
+  // Email de contact
+  email: '',   
+
+  // Numéro de téléphone
+  phone: '',   
+
+  // ID de l'utilisateur (sera rempli automatiquement)
+  userid: '',  
 })
 
-// Vérifier l'état de l'utilisateur connecté
+// Vérifie si un utilisateur est connecté dès que le composant est monté
 onMounted(() => {
-  const storedUser = localStorage.getItem('user')
+  // Récupère les données de l'utilisateur depuis le localStorage
+  const storedUser = localStorage.getItem('user') 
+
+  // Si un utilisateur est trouvé dans le localStorage, il est authentifié
   if (storedUser) {
-    user.value = JSON.parse(storedUser)
-    isLoggedIn.value = true
+    // Convertit les données JSON en objet JS
+    user.value = JSON.parse(storedUser) 
+    
+    // Indique que l'utilisateur est connecté
+    isLoggedIn.value = true 
   }
 })
 
-// Soumettre l'annonce
+// Fonction pour soumettre une annonce
 const submitAnnouncement = async () => {
-  // Réinitialiser les erreurs
+  // Réinitialise les erreurs éventuelles de la soumission précédente
   errors.value = {}
+
+  // Réinitialise le message d'erreur global
   errorMessage.value = ''
 
+  // Si l'utilisateur n'est pas connecté, on affiche un message d'erreur et on arrête la fonction
   if (!isLoggedIn.value) {
     errorMessage.value = 'Vous devez être connecté pour soumettre une annonce.'
     return
   }
 
   try {
-    // Récupérer l'id utilisateur
+    // Récupère de nouveau les données de l'utilisateur depuis le localStorage
     const storedUser = localStorage.getItem('user')
+
+    // Convertit les données JSON en objet JS
     const userObject = JSON.parse(storedUser); 
-    const user_id =  userObject.id;
     
-    // Envoi des données à l'API
+    // Extrait l'identifiant de l'utilisateur
+    const user_id =  userObject.id; 
+
+    // Envoie une requête POST à l'API pour créer une nouvelle annonce
     const response = await axios.post(`${apiUrl}/announcements`, {
-      name: announcement.value.name,
-      style: announcement.value.style,
-      email: announcement.value.email,
-      phone: announcement.value.phone,
-      userId: user_id
+      // Nom de l'annonce
+      name: announcement.value.name,     
+      
+      // Style musical
+      style: announcement.value.style,   
+      
+      // Email de contact
+      email: announcement.value.email,   
+
+      // Téléphone de contact
+      phone: announcement.value.phone,   
+
+      // ID de l'utilisateur connecté
+      userId: user_id                    
     }, {
+      // Ajout du token d'authentification dans l'en-tête
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token')}` 
       }
     })
 
+    // Si la requête réussit, on vide le message d'erreur
     errorMessage.value = '' 
 
+    // Déclenche un événement global (utile si d'autres composants doivent se mettre à jour)
     window.dispatchEvent(new Event('userUpdated'))
 
+    // Affiche un message de succès
     successMessage.value = 'Le musicien a été ajouté !'
-    sessionStorage.setItem('successMessage', successMessage.value)
 
+    // Stocke le message temporairement pour d'autres pages
+    sessionStorage.setItem('successMessage', successMessage.value) 
+
+    // Redirige vers la page d'accueil après soumission
     router.push('/')
   } catch (error) {
+    // Si l'API retourne une erreur de validation (code 422), on stocke les erreurs de chaque champ
     if (error.response && error.response.status === 422) {
-      // Capture des erreurs spécifiques à chaque champ
       errors.value = error.response.data.errors
     } else {
+      // Pour toute autre erreur, on affiche un message d'erreur générique
       errorMessage.value = 'Une erreur est survenue lors de la soumission de l\'annonce.'
     }
+
+    // On vide le message de succès dans tous les cas d'échec
     successMessage.value = '' 
   }
 }

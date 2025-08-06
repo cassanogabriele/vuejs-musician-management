@@ -85,8 +85,9 @@ const isLoggedIn = ref(false)
 const successMessage = ref('')
 const styles = ref([]) 
 const selectedStyle = ref('') 
-const apiUrl = 'http://127.0.0.1:8000/api'
-// const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
+
+// const apiUrl = 'http://127.0.0.1:8000/api'
+const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
 
 // Vérifier l'état de connexion lors du montage
 const checkUser = () => {
@@ -219,5 +220,4 @@ const handleLogout = async () => {
   background-color: #343a40; /* Fond sombre */
   color: white;
 }
-
 </style>

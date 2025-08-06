@@ -67,8 +67,8 @@ export default {
             // Liste des erreurs venant de Laravel
             errorList: '', 
             alertMessage: '', 
-            apiUrl: 'http://127.0.0.1:8000/api',
-            // apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api',
+            // apiUrl: 'http://127.0.0.1:8000/api',
+            apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api',
             model: {
                 musician: {
                     name: '',

@@ -36,7 +36,9 @@ const isLoggedIn = ref(false)
 const user = ref(null)
 const musicians = ref([])
 const successMessage = ref('')
-const apiUrl = 'http://127.0.0.1:8000/api';
+
+// const apiUrl = 'http://127.0.0.1:8000/api';
+const apiUrl = 'http://musicianmanagement.gabriel-cassano.be/api';
 
 const showMessage = (message) => {
   successMessage.value = message
@@ -78,30 +80,33 @@ const fetchMusicians = async () => {
 
 const toggleWishlist = async (musicianId) => {
   try {
-    const res = await axios.get(`${apiUrl}/wishlists`);
+    if (!user.value || !user.value.id) {
+      console.error("Utilisateur non connecté");
+      return;
+    }
+
+    const userId = user.value.id;
+
+    // Récupère uniquement les wishlists de l'utilisateur connecté
+    const res = await axios.get(`${apiUrl}/wishlists`, {
+      params: {
+        user_id: user.value.id, 
+      },
+    });
+
     const wishlists = res.data;
 
     if (wishlists.length === 0) {
+      // Redirige vers la création d'une wishlist si aucune n'existe
       router.push({ name: 'create-wishlist', params: { id: musicianId } });
     } else {
-      // Si l'utilisateur a des wishlists, ajouter à la première wishlist par défaut
+      // Ajoute le musicien à la première wishlist
       const selectedWishlistId = wishlists[0].id;
-      await addMusicianToWishlist(musicianId, selectedWishlistId);
+
+      router.push({ name: 'create-wishlist', params: { id: musicianId } });
     }
   } catch (error) {
-    console.error("Erreur lors de la récupération des wishlists", error);
-  }
-};
-
-const addMusicianToWishlist = async (musicianId, wishlistId) => {
-  try {
-    await axios.post(`${apiUrl}/wishlist/add-musician`, {
-      musician_id: musicianId,
-      wishlist_id: wishlistId
-    });
-    showMessage('Musicien ajouté à la wishlist avec succès !');
-  } catch (error) {
-    console.error("Erreur lors de l'ajout du musicien à la wishlist", error);
+    console.error("Erreur lors de la récupération des listes e souhaits", error);
   }
 };
 </script>
