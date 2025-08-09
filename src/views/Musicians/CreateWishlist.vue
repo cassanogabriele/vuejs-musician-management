@@ -17,7 +17,7 @@
         v-model="newWishlistName"
         required
       />
-      <button type="submit" class="btn btn-primary mt-2" @click="createNewWishlist">Créer</button>
+      <button type="button" class="btn btn-primary mt-2" @click="createNewWishlist">Créer</button>
     </div>
 
     <!-- Si l'utilisateur a des wishlists -->
@@ -44,14 +44,14 @@
           v-model="newWishlistName"
           required
         />
-        <button type="submit" class="btn btn-primary mt-2" @click="createNewWishlist">Créer</button>
+        <button type="button" class="btn btn-primary mt-2" @click="createNewWishlist">Créer</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
   data() {
@@ -60,19 +60,53 @@ export default {
       selectedWishlistId: null,
       newWishlistName: '',
       alertMessage: '',
-      musicianId: null,
       // apiUrl: 'http://127.0.0.1:8000/api',
-      apiUrl: 'http://musicianmanagement.gabriel-cassano.be/api',
+      apiUrl : 'http://musicianmanagement.gabriel-cassano.be/api',
+      musicianId: null,
     };
   },
   mounted() {
-    // Récupérer l'ID du musicien depuis les paramètres de la route
-    this.musicianId = this.$route.params.id; // Correction ici
+     // Récupérer l'ID du musicien depuis les paramètres de la route
+    this.musicianId = this.$route.params.id;
     
     // Récupérer les wishlists existantes de l'utilisateur
     this.fetchWishlists();
   },
   methods: {
+    // Création d'une nouvelle wishlist
+    createNewWishlist() {
+      if (!this.newWishlistName) {
+        this.alertMessage = "Veuillez entrer un nom pour la liste de souhaits";
+        return;
+      }
+
+      const storedUser = localStorage.getItem("user");
+
+      if (!storedUser) {
+        this.alertMessage = "Erreur : utilisateur non connecté";
+        return;
+      }
+
+      const userObject = JSON.parse(storedUser);
+      const user_id = userObject.id;
+
+      axios.post(`${this.apiUrl}/wishlist`, {
+        name: this.newWishlistName,
+        musician_id: this.musicianId,
+        user_id: user_id,
+      })
+      .then(() => {
+        this.alertMessage = 'Nouvelle liste de souhaits créée et musicien ajouté !';
+        this.newWishlistName = '';
+        this.fetchWishlists(); // Recharge la liste après création
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la création de la wishlist", error);
+        this.alertMessage = "Erreur lors de la création de la wishlist. Veuillez réessayer.";
+      });
+    },
+
+    // Récupérer les wishlists de l'utilisateur
     fetchWishlists() {
       const storedUser = localStorage.getItem('user');
 
@@ -84,7 +118,6 @@ export default {
       const userObject = JSON.parse(storedUser);
       const userId = userObject.id;
 
-      // Envoie l'ID de l'utilisateur directement dans l'URL
       axios.get(`${this.apiUrl}/wishlists/${userId}`)
         .then((res) => {
           this.wishlists = res.data;
@@ -99,52 +132,32 @@ export default {
           }
         });
     },
+
+    // Soumission du formulaire pour ajouter le musicien à la wishlist sélectionnée
     handleSubmit() {
-      if (this.selectedWishlistId) {
-        this.addMusicianToWishlist(this.musicianId, this.selectedWishlistId);
-      } else if (this.newWishlistName) {
-        this.createNewWishlist();
+      if (!this.selectedWishlistId) {
+        this.alertMessage = "Veuillez choisir une wishlist";
+        return;
       }
+      this.addMusicianToWishlist(this.musicianId, this.selectedWishlistId);
     },
+
+    // Ajoute un musicien à une wishlist
     addMusicianToWishlist(musicianId, wishlistId) {
+      console.log("Ajout musicien", musicianId, "à la wishlist", wishlistId);
+
       axios.post(`${this.apiUrl}/wishlist/add-musician`, {
-        musician_id: musicianId, 
+        musician_id: musicianId,
         wishlist_id: wishlistId,
-      }).then(() => {
+      })
+      .then(() => {
         this.alertMessage = 'Musicien ajouté à la liste de souhaits';
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.error("Erreur lors de l'ajout du musicien", error);
+        this.alertMessage = "Erreur lors de l'ajout du musicien. Veuillez réessayer.";
       });
     },
-
-    createNewWishlist() {
-      if (!this.newWishlistName) {
-        this.alertMessage = 'Veuillez entrer un nom pour la wishlist.';
-        return;
-      }
-
-      const storedUser = localStorage.getItem('user');
-      if (!storedUser) {
-        this.alertMessage = "Erreur : utilisateur non connecté.";
-        return;
-      }
-      const userObject = JSON.parse(storedUser);
-      const user_id = userObject.id;
-
-      axios.post(`${this.apiUrl}/wishlist`, {
-        name: this.newWishlistName,          
-        musician_id: this.musicianId, 
-        user_id: user_id, 
-      }).then(() => {
-        this.alertMessage = 'Nouvelle wishlist créée et musicien ajouté!';
-        this.newWishlistName = '';  
-        this.fetchWishlists();  
-      }).catch((error) => {
-        console.error("Erreur lors de la création de la wishlist", error);
-        this.alertMessage = "Erreur lors de la création de la liste de souhaits. Veuillez réessayer.";
-      });
-    },
-  },
-};
+  }
+}
 </script>
-
