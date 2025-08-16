@@ -7,7 +7,7 @@
       <button type="button" class="btn-close" @click="alertMessage = ''"></button>
     </div>
 
-    <!-- Si l'utilisateur n'a pas de wishlist -->
+    <!-- Si l'utilisateur n'a pas de liste de souhaits -->
     <div v-if="wishlists.length === 0" class="mb-3">
       <label for="newWishlist" class="form-label">Nom de la nouvelle liste de souhaits :</label>
       <input
@@ -20,21 +20,21 @@
       <button type="button" class="btn btn-primary mt-2" @click="createNewWishlist">Créer</button>
     </div>
 
-    <!-- Si l'utilisateur a des wishlists -->
+    <!-- Si l'utilisateur a des listes de souhaits -->
     <div v-else class="mb-3">
       <form @submit.prevent="handleSubmit">
-        <label for="wishlist" class="form-label">Choisissez une wishlist :</label>
+        <label for="wishlist" class="form-label">Choisissez une lise de souhaits :</label>
         <select v-model="selectedWishlistId" id="wishlist" class="form-select" required>
-          <option value="" disabled selected>Choisissez une wishlist</option>
+          <option value="" disabled selected>Choisissez une liste de souhaits</option>
           <option v-for="wishlist in wishlists" :key="wishlist.id" :value="wishlist.id">
             {{ wishlist.name }}
           </option>
         </select>
 
-        <button type="submit" class="btn btn-primary mt-2">Ajouter à la wishlist</button>
+        <button type="submit" class="btn btn-primary mt-2">Ajouter à la liste de souhaits</button>
       </form>
 
-      <!-- Si aucune wishlist n'est sélectionnée, possibilité de créer une nouvelle wishlist -->
+      <!-- Si aucune wishlist n'est sélectionnée, possibilité de créer une nouvelle liste de souhaits -->
       <div v-if="!selectedWishlistId" class="mt-3">
         <label for="newWishlist" class="form-label">Nom de la nouvelle liste de souhaits :</label>
         <input

@@ -100,31 +100,31 @@ export default {
     },
 
     toggleWishlist(musicianId) {
-      // Vérifier si l'utilisateur a déjà des wishlists
+      // Vérifier si l'utilisateur a déjà des listes de souhaits
       axios.get(`${this.apiUrl}/wishlists`).then(res => {
         const wishlists = res.data;
 
         if (wishlists.length === 0) {
-          // Si l'utilisateur n'a pas de wishlist, on le redirige vers la page de création
+          // Si l'utilisateur n'a pas de liste de souhaits, on le redirige vers la page de création
           this.$router.push({ name: 'create-wishlist', params: { musicianId: musicianId } });
         } else {
-          // Si l'utilisateur a des wishlists, on lui permet de les choisir ou de créer une nouvelle
-          this.selectedWishlistId = wishlists[0].id; // Par exemple, on sélectionne la première wishlist
+          // Si l'utilisateur a des listes de souhaits, on lui permet de les choisir ou de créer une nouvelle
+          this.selectedWishlistId = wishlists[0].id; 
           this.addMusicianToWishlist(musicianId, this.selectedWishlistId);
         }
       }).catch(error => {
-        console.error("Erreur lors de la récupération des wishlists", error);
+        console.error("Erreur lors de la récupération des listes de souhaits", error);
       });
     },  
     toggleWishlist(musicianId) {      
-      // Vérifier si l'utilisateur a déjà des wishlists
+      // Vérifier si l'utilisateur a déjà des listes de souhaits
       axios.get(`${this.apiUrl}/wishlists`).then(res => {
         const wishlists = res.data;
 
-        // Rediriger vers la page de création de wishlist avec l'ID du musicien
+        // Rediriger vers la page de création de listes de souhaits avec l'ID du musicien
         this.$router.push({ name: 'create-wishlist', params: { id: musicianId } });
       }).catch(error => {
-        console.error("Erreur lors de la récupération des wishlists", error);
+        console.error("Erreur lors de la récupération des listes de souhaits", error);
       });
     },
     formatDate(date) {

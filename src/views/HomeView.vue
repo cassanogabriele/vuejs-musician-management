@@ -87,7 +87,7 @@ const toggleWishlist = async (musicianId) => {
 
     const userId = user.value.id;
 
-    // Récupère uniquement les wishlists de l'utilisateur connecté
+    // Récupère uniquement les listes de souhaits de l'utilisateur de l'utilisateur connecté
     const res = await axios.get(`${apiUrl}/wishlists`, {
       params: {
         user_id: user.value.id, 
@@ -97,10 +97,10 @@ const toggleWishlist = async (musicianId) => {
     const wishlists = res.data;
 
     if (wishlists.length === 0) {
-      // Redirige vers la création d'une wishlist si aucune n'existe
+      // Redirige vers la création d'une liste de souhaits si aucune n'existe
       router.push({ name: 'create-wishlist', params: { id: musicianId } });
     } else {
-      // Ajoute le musicien à la première wishlist
+      // Ajoute le musicien à la première liste de souhaits
       const selectedWishlistId = wishlists[0].id;
 
       router.push({ name: 'create-wishlist', params: { id: musicianId } });

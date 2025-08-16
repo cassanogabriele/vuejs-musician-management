@@ -7,14 +7,14 @@
       <button type="button" class="btn-close" @click="alertMessage = ''"></button>
     </div>
 
-    <!-- Si l'utilisateur n'a pas de wishlist -->
+    <!-- Si l'utilisateur n'a pas de liste de souhaits -->
     <div v-if="wishlists.length === 0" class="mb-3">
       <div class="alert alert-info" role="alert">
         Vous n'avez pas encore de liste de souhaits.
       </div>
     </div>
 
-    <!-- Si l'utilisateur a des wishlists -->
+    <!-- Si l'utilisateur a des listes de souhaits -->
     <div v-else class="mb-3">
       <div v-for="wishlist in wishlists" :key="wishlist.id" class="card mb-3">
         <div class="card-body">
@@ -83,11 +83,11 @@ export default {
         });
     },
     removeMusician(wishlistId, musicianId) {
-      if (!confirm("Tu veux vraiment supprimer ce musicien de la wishlist ?")) return;
+      if (!confirm("Tu veux vraiment supprimer ce musicien de la liste de souhaits ?")) return;
 
       axios.delete(`${this.apiUrl}/wishlist/${wishlistId}/musician/${musicianId}`)
         .then((response) => {
-          this.alertMessage = `Le musicien ${response.data.musicianName} a été supprimé de la wishlist avec succès.`;
+          this.alertMessage = `Le musicien ${response.data.musicianName} a été supprimé de la liste de souhaits avec succès.`;
           // Recharger la liste des souhaits
           this.fetchWishlists(); 
         })
