@@ -87,10 +87,9 @@ export default {
 
       axios.delete(`${this.apiUrl}/wishlist/${wishlistId}/musician/${musicianId}`)
         .then((response) => {
-          // Assurez-vous que la réponse contient des données qui incluent 'musicianName' 
           this.alertMessage = `Le musicien ${response.data.musicianName} a été supprimé de la wishlist avec succès.`;
-          
-          this.fetchWishlists(); // refresh
+          // Recharger la liste des souhaits
+          this.fetchWishlists(); 
         })
         .catch((error) => {
           console.error("Erreur lors de la suppression du musicien", error);
